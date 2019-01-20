@@ -1,5 +1,6 @@
 package phisic
 
+import com.google.gson.GsonBuilder
 import com.pi4j.io.gpio.*
 import com.pi4j.util.CommandArgumentParser
 import com.pi4j.io.gpio.GpioPinDigitalInput
@@ -11,7 +12,8 @@ import java.util.ArrayList
 import sun.nio.cs.Surrogate.isHigh
 import com.pi4j.io.gpio.event.GpioPinDigitalStateChangeEvent
 import com.pi4j.io.gpio.event.GpioPinListenerDigital
-
+import java.io.File
+import java.lang.Exception
 
 
 /**
@@ -21,7 +23,7 @@ class Board
 {
 
 
-    val buttons =arrayListOf(
+    var buttons =arrayListOf(
         Button(0, arrayListOf( Rele(0, 1, 3),Rele(0, 2, 1),Rele(0, 4, 8))),
         Button(1, arrayListOf( Rele(0, 1, 3),Rele(0, 2, 1),Rele(0, 4, 8))),
         Button(2, arrayListOf( Rele(0, 1, 3),Rele(0, 2, 1),Rele(0, 4, 8))),
@@ -34,6 +36,53 @@ class Board
     {
         for(b in buttons)
             b.generate()
+    }
+
+
+
+    /**
+     * Обновить настройки из файла.
+     */
+    fun update() : Boolean
+    {
+        /**
+         *  Собрать файл из стрингов.
+         */
+        fun fromString(json: String)  : Boolean
+        {
+            try {
+                var builder = GsonBuilder()
+                var gson = builder.create()
+                var pgs = gson.fromJson(json, Board().javaClass)
+                this.buttons = pgs.buttons
+
+                return true
+            }
+            catch (e: Exception)
+            {
+                e.printStackTrace()
+                return false
+            }
+        }//fun fromString(json: String)  : Boolean
+        try {
+            val file = File("Settings.txt")
+            //проверяем, что если файл не существует то создаем его
+            if (file.exists())
+            {
+                return  fromString(file.readText())
+            }
+            else
+            {
+                println("File not found")
+                return false
+            }
+        }
+        catch (e: Exception)
+        {
+            e.printStackTrace()
+            return false
+        }
+
     }
 
 }
@@ -60,7 +109,6 @@ class Button(val buttonNumber: Int, val reles: ArrayList<Rele>)
 
     private val listeners = ArrayList<RpiButtonListener>()
 
-    var value = true;
 
 
     /**
