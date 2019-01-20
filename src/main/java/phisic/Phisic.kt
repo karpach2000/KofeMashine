@@ -1,96 +1,91 @@
 package phisic
 
 import com.pi4j.io.gpio.*
-import com.pi4j.io.gpio.event.GpioPinDigitalStateChangeEvent
-import com.pi4j.io.gpio.event.GpioPinListenerDigital
 import com.pi4j.util.CommandArgumentParser
 import com.pi4j.io.gpio.GpioPinDigitalInput
 import com.pi4j.io.gpio.Pin
 import com.pi4j.io.gpio.PinPullResistance
 import com.pi4j.io.gpio.RaspiPin
 import com.pi4j.io.gpio.GpioPinDigitalOutput
+import java.util.ArrayList
+import sun.nio.cs.Surrogate.isHigh
+import com.pi4j.io.gpio.event.GpioPinDigitalStateChangeEvent
+import com.pi4j.io.gpio.event.GpioPinListenerDigital
 
 
 
-
-
-
-
-
-
-object Interfaces
-{
-    fun getButtonPin (buttonNumber : Int) : Pin
-    {
-
-
-    }
-
-    fun getRelePin (buttonNumber : Int) : Pin
-    {
-
-
-    }
-}
-
-
-
-
+/**
+ * Наша плата.
+ */
 class Board
 {
 
 
     val buttons =arrayListOf(
-        Button(0),
-        Button(1),
-        Button(2),
-        Button(3),
-        Button(4),
-        Button(5))
-
-    val reles =arrayListOf(
-        Rele(0),
-        Rele(1),
-        Rele(2),
-        Rele(3),
-        Rele(4),
-        Rele(5),
-        Rele(6),
-        Rele(7),
-        Rele(8),
-        Rele(9),
-        Rele(10),
-        Rele(11),
-        Rele(12),
-        Rele(13),
-        Rele(14)
+        Button(0, arrayListOf( Rele(0, 1, 3),Rele(0, 2, 1),Rele(0, 4, 8))),
+        Button(1, arrayListOf( Rele(0, 1, 3),Rele(0, 2, 1),Rele(0, 4, 8))),
+        Button(2, arrayListOf( Rele(0, 1, 3),Rele(0, 2, 1),Rele(0, 4, 8))),
+        Button(3, arrayListOf( Rele(0, 1, 3),Rele(0, 2, 1),Rele(0, 4, 8))),
+        Button(4, arrayListOf( Rele(0, 1, 3),Rele(0, 2, 1),Rele(0, 4, 8)))
     )
 
 
-
-
-
-
+    fun generate()
+    {
+        for(b in buttons)
+            b.generate()
+    }
 
 }
 
+/**
+ * Слушатель события нажатия кнопки.
+ */
+interface RpiButtonListener {
+    fun buttonPositionChanged(pin: Pin, value: Boolean)
+}
 
 
-class Button(val buttonNumber: Int)
+/**
+ * Кнопка.
+ * @param buttonNumber  ноомер кнопки по ТЗ
+ * @param reles релюшки))
+ */
+class Button(val buttonNumber: Int, val reles: ArrayList<Rele>)
 {
 
     private val gpio = GpioFactory.getInstance()
-    private var pin: Pin? = null
-    private var button: GpioPinDigitalInput? = null
+    private lateinit var pin: Pin
+    private lateinit var button: GpioPinDigitalInput
 
-    val reles =  ArrayList<Rele>()
+    private val listeners = ArrayList<RpiButtonListener>()
 
+    var value = true;
+
+
+    /**
+     * Инициализируем железо.
+     */
     fun generate()
     {
         //инициализвция кнопки
         pin = CommandArgumentParser.getPin(RaspiPin::class.java, Interfaces.getButtonPin(buttonNumber))
         val pull = CommandArgumentParser.getPinPullResistance(PinPullResistance.PULL_UP)
         button = gpio.provisionDigitalInputPin(pin, pull)
+
+        //инициализация релюх
+        for (r in reles)
+        {
+            r.generate()
+        }
+
+        //подписка на события
+        this.button.addListener(GpioPinListenerDigital {
+            //value = this.button.isHigh()
+            if(this.button.isHigh())
+                for (r in reles)
+                    r.action()
+        })
     }
 
 
@@ -102,12 +97,18 @@ class Button(val buttonNumber: Int)
 
 /**
  * Класс описывающий поведение реле.
+ * @param releNumber номе реле
+ * @param timeOn время через которое реле включается
+ * @param timeJob время через которое реле выключается
  */
-class Rele(val releNumber: Int)
+class Rele(val releNumber: Int, val timeOn: Long, val timeJob: Long)
 {
 
     private val gpio = GpioFactory.getInstance()
     private lateinit var pin : GpioPinDigitalOutput
+
+
+
     /**
      * Инверсия пина.
      */
@@ -116,14 +117,7 @@ class Rele(val releNumber: Int)
      * Имя реле.
      */
     var name = "Напишите сюда имя реле что бы не путаться."
-    /**
-     * Через какое время включится.
-     */
-    var timeOn = 0L
-    /**
-     * Через какое время выключится.
-     */
-    var timeOff = 0L
+
 
     /**
      * Инициализировать.
@@ -133,12 +127,15 @@ class Rele(val releNumber: Int)
         pin = gpio.provisionDigitalOutputPin(Interfaces.getRelePin(releNumber))
     }
 
+    /**
+     * Отработать алгоритм
+     */
     fun action()
     {
         var thread = Thread(Runnable {
             Thread.sleep(timeOn)
             open()
-            Thread.sleep(timeOff)
+            Thread.sleep(timeJob)
             close()
 
         })
