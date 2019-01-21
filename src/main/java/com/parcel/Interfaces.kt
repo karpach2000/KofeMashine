@@ -1,4 +1,4 @@
-package phisic
+package com.parcel
 
 import com.pi4j.io.gpio.Pin
 import com.pi4j.io.gpio.RaspiPin

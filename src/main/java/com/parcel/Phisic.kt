@@ -1,4 +1,4 @@
-package phisic
+package com.parcel
 
 import com.google.gson.GsonBuilder
 import com.pi4j.io.gpio.*
@@ -14,6 +14,8 @@ import com.pi4j.io.gpio.event.GpioPinDigitalStateChangeEvent
 import com.pi4j.io.gpio.event.GpioPinListenerDigital
 import java.io.File
 import java.lang.Exception
+import java.nio.file.Files
+import java.nio.file.Paths
 
 
 /**
@@ -22,13 +24,14 @@ import java.lang.Exception
 class Board
 {
 
+    private val settingsFileName = "Settings.txt"
 
     var buttons =arrayListOf(
-        Button(0, arrayListOf( Rele(0, 1, 3),Rele(0, 2, 1),Rele(0, 4, 8))),
-        Button(1, arrayListOf( Rele(0, 1, 3),Rele(0, 2, 1),Rele(0, 4, 8))),
-        Button(2, arrayListOf( Rele(0, 1, 3),Rele(0, 2, 1),Rele(0, 4, 8))),
-        Button(3, arrayListOf( Rele(0, 1, 3),Rele(0, 2, 1),Rele(0, 4, 8))),
-        Button(4, arrayListOf( Rele(0, 1, 3),Rele(0, 2, 1),Rele(0, 4, 8)))
+        Button(0, arrayListOf(Rele(0, 1, 3), Rele(0, 2, 1), Rele(0, 4, 8))),
+        Button(1, arrayListOf(Rele(0, 1, 3), Rele(0, 2, 1), Rele(0, 4, 8))),
+        Button(2, arrayListOf(Rele(0, 1, 3), Rele(0, 2, 1), Rele(0, 4, 8))),
+        Button(3, arrayListOf(Rele(0, 1, 3), Rele(0, 2, 1), Rele(0, 4, 8))),
+        Button(4, arrayListOf(Rele(0, 1, 3), Rele(0, 2, 1), Rele(0, 4, 8)))
     )
 
 
@@ -38,7 +41,38 @@ class Board
             b.generate()
     }
 
+    @Override
+    override fun toString() :String
+    {
+        var builder =  GsonBuilder()
+        var gson = builder.create()
+        return gson.toJson(this)
+    }
 
+
+
+    /**
+     * Сохраниь настройки в файл.
+     */
+    fun save() : Boolean
+    {
+        try {
+            val file = File(settingsFileName)
+
+            //проверяем, что если файл не существует то создаем его
+            if (file.exists())
+                file.delete()
+            file.createNewFile()
+
+            file.writeText(toString())
+            return true
+        }
+        catch (e: Exception)
+        {
+            e.printStackTrace()
+            return false
+        }
+    }
 
     /**
      * Обновить настройки из файла.
@@ -73,6 +107,7 @@ class Board
             }
             else
             {
+                save()
                 println("File not found")
                 return false
             }
@@ -130,9 +165,11 @@ class Button(val buttonNumber: Int, val reles: ArrayList<Rele>)
         //подписка на события
         this.button.addListener(GpioPinListenerDigital {
             //value = this.button.isHigh()
-            if(this.button.isHigh())
+            if(this.button.isHigh()) {
+                println("Button $buttonNumber pressed")
                 for (r in reles)
                     r.action()
+            }
         })
     }
 
@@ -193,11 +230,18 @@ class Rele(val releNumber: Int, val timeOn: Long, val timeJob: Long)
     /**
      * Открыит реле.
      */
-    private fun open() = if(!iverse) pin.high() else pin.low()
+    private fun open(){
+
+        println("Rele $releNumber open.")
+        if(!iverse) pin.high() else pin.low()
+    }
 
     /**
      * Закрыть реле.
      */
-    private fun close() =   if(!iverse) pin.low() else pin.high()
+    private fun close(){
+        println("Rele $releNumber closed.")
+        if(!iverse) pin.low() else pin.high()
+    }
 
 }

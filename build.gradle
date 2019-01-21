@@ -6,6 +6,18 @@ plugins {
 group 'com.parcel'
 version '1.0-SNAPSHOT'
 
+//create a single Jar with all dependencies
+task fatJar(type: Jar) {
+    manifest {
+        attributes 'Implementation-Title': 'KofeMashine',
+                'Implementation-Version': version,
+                'Main-Class': 'com.parcel.MainKt'
+    }
+    baseName = project.name + '-all'
+    from { configurations.compile.collect { it.isDirectory() ? it : zipTree(it) } }
+    with jar
+}
+
 sourceCompatibility = 1.8
 
 repositories {
