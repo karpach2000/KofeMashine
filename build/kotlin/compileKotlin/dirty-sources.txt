@@ -1,0 +1,2 @@
+/home/nemo/Projects/Parcel/CoffeeMachine/KofeMashine/src/main/java/com/parcel/license/LicenseChecker.kt
+/home/nemo/Projects/Parcel/CoffeeMachine/KofeMashine/src/main/java/Main.kt
