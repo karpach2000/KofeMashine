@@ -1,0 +1,134 @@
+{
+  "buttons": [
+    {
+      "buttonNumber": 0,
+      "reles": [
+        {
+          "iverse": false,
+          "name": "Напишите сюда имя реле что бы не путаться.",
+          "releNumber": 0,
+          "timeOn": 1000,
+          "timeJob": 5000
+        },
+        {
+          "iverse": false,
+          "name": "Напишите сюда имя реле что бы не путаться.",
+          "releNumber": 1,
+          "timeOn": 2000,
+          "timeJob": 4000
+        },
+        {
+          "iverse": false,
+          "name": "Напишите сюда имя реле что бы не путаться.",
+          "releNumber": 2,
+          "timeOn": 5000,
+          "timeJob": 8000
+        }
+      ]
+    },
+    {
+      "buttonNumber": 1,
+      "reles": [
+        {
+          "iverse": false,
+          "name": "Напишите сюда имя реле что бы не путаться.",
+          "releNumber": 0,
+          "timeOn": 1000,
+          "timeJob": 6000
+        },
+        {
+          "iverse": false,
+          "name": "Напишите сюда имя реле что бы не путаться.",
+          "releNumber": 1,
+          "timeOn": 2000,
+          "timeJob": 3000
+        },
+        {
+          "iverse": false,
+          "name": "Напишите сюда имя реле что бы не путаться.",
+          "releNumber": 2,
+          "timeOn": 3000,
+          "timeJob": 4000
+        }
+      ]
+    },
+    {
+      "buttonNumber": 2,
+      "reles": [
+        {
+          "iverse": false,
+          "name": "Напишите сюда имя реле что бы не путаться.",
+          "releNumber": 3,
+          "timeOn": 1,
+          "timeJob": 3
+        },
+        {
+          "iverse": false,
+          "name": "Напишите сюда имя реле что бы не путаться.",
+          "releNumber": 4,
+          "timeOn": 2,
+          "timeJob": 1
+        },
+        {
+          "iverse": false,
+          "name": "Напишите сюда имя реле что бы не путаться.",
+          "releNumber": 5,
+          "timeOn": 4,
+          "timeJob": 8
+        }
+      ]
+    },
+    {
+      "buttonNumber": 3,
+      "reles": [
+        {
+          "iverse": false,
+          "name": "Напишите сюда имя реле что бы не путаться.",
+          "releNumber": 2,
+          "timeOn": 1,
+          "timeJob": 3
+        },
+        {
+          "iverse": false,
+          "name": "Напишите сюда имя реле что бы не путаться.",
+          "releNumber": 1,
+          "timeOn": 2,
+          "timeJob": 1
+        },
+        {
+          "iverse": false,
+          "name": "Напишите сюда имя реле что бы не путаться.",
+          "releNumber": 1,
+          "timeOn": 4,
+          "timeJob": 8
+        }
+      ]
+    },
+    {
+      "buttonNumber": 4,
+      "reles": [
+        {
+          "iverse": false,
+          "name": "Напишите сюда имя реле что бы не путаться.",
+          "releNumber": 0,
+          "timeOn": 1,
+          "timeJob": 3
+        },
+        {
+          "iverse": false,
+          "name": "Напишите сюда имя реле что бы не путаться.",
+          "releNumber": 1,
+          "timeOn": 2,
+          "timeJob": 1
+        },
+        {
+          "iverse": false,
+          "name": "Напишите сюда имя реле что бы не путаться.",
+          "releNumber": 4,
+          "timeOn": 4,
+          "timeJob": 8
+        }
+      ]
+    }
+  ]
+}

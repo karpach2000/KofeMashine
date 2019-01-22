@@ -1,5 +1,5 @@
 Manifest-Version: 1.0
 Implementation-Title: KofeMashine
 Implementation-Version: 1.0-SNAPSHOT
-Main-Class: com.parcel.MainKt
+Main-Class: MainKt
 

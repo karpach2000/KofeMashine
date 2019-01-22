@@ -1,6 +1,7 @@
 package com.parcel
 
 import com.google.gson.GsonBuilder
+import com.google.gson.annotations.Expose
 import com.pi4j.io.gpio.*
 import com.pi4j.util.CommandArgumentParser
 import com.pi4j.io.gpio.GpioPinDigitalInput
@@ -24,14 +25,16 @@ import java.nio.file.Paths
 class Board
 {
 
-    private val settingsFileName = "Settings.txt"
+    @Expose(serialize = false)
+    private val settingsFileName = "Settings.json"
 
+    @Expose
     var buttons =arrayListOf(
-        Button(0, arrayListOf(Rele(0, 1, 3), Rele(0, 2, 1), Rele(0, 4, 8))),
-        Button(1, arrayListOf(Rele(0, 1, 3), Rele(0, 2, 1), Rele(0, 4, 8))),
-        Button(2, arrayListOf(Rele(0, 1, 3), Rele(0, 2, 1), Rele(0, 4, 8))),
-        Button(3, arrayListOf(Rele(0, 1, 3), Rele(0, 2, 1), Rele(0, 4, 8))),
-        Button(4, arrayListOf(Rele(0, 1, 3), Rele(0, 2, 1), Rele(0, 4, 8)))
+        Button(0, arrayListOf(Rele(0, 1000, 3000), Rele(2, 200, 10), Rele(1, 400, 800))),
+        Button(1, arrayListOf(Rele(2, 1, 3), Rele(1, 2, 1), Rele(0, 4, 8))),
+        Button(2, arrayListOf(Rele(3, 1, 3), Rele(4, 2, 1), Rele(5, 4, 8))),
+        Button(3, arrayListOf(Rele(2, 1, 3), Rele(1, 2, 1), Rele(1, 4, 8))),
+        Button(4, arrayListOf(Rele(0, 1, 3), Rele(1, 2, 1), Rele(4, 4, 8)))
     )
 
 
@@ -44,7 +47,7 @@ class Board
     @Override
     override fun toString() :String
     {
-        var builder =  GsonBuilder()
+        var builder =  GsonBuilder().excludeFieldsWithoutExposeAnnotation().setPrettyPrinting()
         var gson = builder.create()
         return gson.toJson(this)
     }
@@ -99,7 +102,7 @@ class Board
             }
         }//fun fromString(json: String)  : Boolean
         try {
-            val file = File("Settings.txt")
+            val file = File(settingsFileName)
             //проверяем, что если файл не существует то создаем его
             if (file.exists())
             {
@@ -135,14 +138,15 @@ interface RpiButtonListener {
  * @param buttonNumber  ноомер кнопки по ТЗ
  * @param reles релюшки))
  */
-class Button(val buttonNumber: Int, val reles: ArrayList<Rele>)
+class Button(@Expose val buttonNumber: Int, @Expose val reles: ArrayList<Rele>)
 {
 
-    private val gpio = GpioFactory.getInstance()
+    @Expose(serialize = false)
     private lateinit var pin: Pin
+    @Expose(serialize = false)
     private lateinit var button: GpioPinDigitalInput
 
-    private val listeners = ArrayList<RpiButtonListener>()
+    //private val listeners = ArrayList<RpiButtonListener>()
 
 
 
@@ -151,6 +155,7 @@ class Button(val buttonNumber: Int, val reles: ArrayList<Rele>)
      */
     fun generate()
     {
+        val gpio = GpioFactory.getInstance()
         //инициализвция кнопки
         pin = CommandArgumentParser.getPin(RaspiPin::class.java, Interfaces.getButtonPin(buttonNumber))
         val pull = CommandArgumentParser.getPinPullResistance(PinPullResistance.PULL_UP)
@@ -186,10 +191,9 @@ class Button(val buttonNumber: Int, val reles: ArrayList<Rele>)
  * @param timeOn время через которое реле включается
  * @param timeJob время через которое реле выключается
  */
-class Rele(val releNumber: Int, val timeOn: Long, val timeJob: Long)
+class Rele(@Expose val releNumber: Int,@Expose  val timeOn: Long,@Expose val timeJob: Long)
 {
-
-    private val gpio = GpioFactory.getInstance()
+    @Expose(serialize = false)
     private lateinit var pin : GpioPinDigitalOutput
 
 
@@ -197,10 +201,12 @@ class Rele(val releNumber: Int, val timeOn: Long, val timeJob: Long)
     /**
      * Инверсия пина.
      */
+    @Expose
     var iverse = false
     /**
      * Имя реле.
      */
+    @Expose
     var name = "Напишите сюда имя реле что бы не путаться."
 
 
@@ -209,7 +215,7 @@ class Rele(val releNumber: Int, val timeOn: Long, val timeJob: Long)
      */
     fun generate()
     {
-        pin = gpio.provisionDigitalOutputPin(Interfaces.getRelePin(releNumber))
+        pin = Interfaces.getRelePin(releNumber)
     }
 
     /**
@@ -232,7 +238,7 @@ class Rele(val releNumber: Int, val timeOn: Long, val timeJob: Long)
      */
     private fun open(){
 
-        println("Rele $releNumber open.")
+        println("Rele $releNumber open. timeOn = $timeOn timeJob = $timeJob")
         if(!iverse) pin.high() else pin.low()
     }
 
@@ -240,7 +246,7 @@ class Rele(val releNumber: Int, val timeOn: Long, val timeJob: Long)
      * Закрыть реле.
      */
     private fun close(){
-        println("Rele $releNumber closed.")
+        println("Rele $releNumber closed. timeOn = $timeOn timeJob = $timeJob")
         if(!iverse) pin.low() else pin.high()
     }
 

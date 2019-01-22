@@ -11,7 +11,7 @@ task fatJar(type: Jar) {
     manifest {
         attributes 'Implementation-Title': 'KofeMashine',
                 'Implementation-Version': version,
-                'Main-Class': 'com.parcel.MainKt'
+                'Main-Class': 'MainKt'
     }
     baseName = project.name + '-all'
     from { configurations.compile.collect { it.isDirectory() ? it : zipTree(it) } }
