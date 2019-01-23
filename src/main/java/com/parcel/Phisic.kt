@@ -18,6 +18,17 @@ import java.lang.Exception
 import java.nio.file.Files
 import java.nio.file.Paths
 
+/**
+ * объеккт для хранения информации о запущенных потоках.
+ */
+object Proceses
+{
+    /**
+     * При запуске потоков, каждое реле добавляет сюда метку соответсвующую ее номеру по ТЗ, при завершении работы реле метку убирает.
+     */
+    val buttonPresedProceses = arrayListOf<Int>()
+}
+
 
 /**
  * Наша плата.
@@ -170,7 +181,7 @@ class Button(@Expose val buttonNumber: Int, @Expose val reles: ArrayList<Rele>)
         //подписка на события
         this.button.addListener(GpioPinListenerDigital {
             //value = this.button.isHigh()
-            if(this.button.isHigh()) {
+            if(this.button.isHigh() && Proceses.buttonPresedProceses.size == 0) {
                 println("Button $buttonNumber pressed")
                 for (r in reles)
                     r.action()
@@ -223,6 +234,7 @@ class Rele(@Expose val releNumber: Int,@Expose  val timeOn: Long,@Expose val tim
      */
     fun action()
     {
+        Proceses.buttonPresedProceses.add(releNumber)
         var thread = Thread(Runnable {
             Thread.sleep(timeOn)
             open()
@@ -248,6 +260,8 @@ class Rele(@Expose val releNumber: Int,@Expose  val timeOn: Long,@Expose val tim
     private fun close(){
         println("Rele $releNumber closed. timeOn = $timeOn timeJob = $timeJob")
         if(!iverse) pin.low() else pin.high()
+        val index = Proceses.buttonPresedProceses.indexOf(releNumber)
+        if (Proceses.buttonPresedProceses.size > index) Proceses.buttonPresedProceses.removeAt(index)
     }
 
 }
