@@ -39,10 +39,10 @@ object Interfaces
         ReleProp(7, RaspiPin.GPIO_27),
         ReleProp(8, RaspiPin.GPIO_28),
         ReleProp(9, RaspiPin.GPIO_29),
-        ReleProp(9, RaspiPin.GPIO_01),
-        ReleProp(9, RaspiPin.GPIO_13),
-        ReleProp(9, RaspiPin.GPIO_10),
-        ReleProp(9, RaspiPin.GPIO_11)
+        ReleProp(10, RaspiPin.GPIO_01),
+        ReleProp(11, RaspiPin.GPIO_13),
+        ReleProp(12, RaspiPin.GPIO_10),
+        ReleProp(13, RaspiPin.GPIO_11)
     )
 
 
